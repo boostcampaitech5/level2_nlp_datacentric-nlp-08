@@ -41,7 +41,7 @@ bertmodel, vocab = get_pytorch_kobert_model(cachedir=".cache")
 tokenizer = get_tokenizer()
 tok = nlp.data.BERTSPTokenizer(tokenizer, vocab, lower=False)
 
-data = pd.read_csv(os.path.join(DATA_DIR, 'train.csv'))
+data = pd.read_csv(os.path.join(DATA_DIR, 'train_g2p_removed_label_error_revised.csv'))
 dataset_train, dataset_eval = train_test_split(data, train_size=0.7, random_state=SEED)
 
 data_train = BERTDataset(dataset_train, tok, max_len, True, False)
@@ -100,5 +100,5 @@ if __name__ == "__main__":
             out = model(token_ids, valid_length, segment_ids)
             test_acc += calc_accuracy(out, label)
         print("epoch {} test acc {}".format(e + 1, test_acc / (batch_id + 1)))
-        torch.save(model.state_dict(),'./save_folder/'+ time +'_'+str(e) +'_epoch_model_state_dict.pth')
-        print('./save_folder/'+ time +'_'+str(e) +'_epoch_model_state_dict.pt')
+        torch.save(model.state_dict(),'./save_folder/'+'model_state_dict.pth')
+        print('./save_folder/'+'model_state_dict.pth')

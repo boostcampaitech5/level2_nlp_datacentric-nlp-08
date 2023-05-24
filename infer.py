@@ -18,7 +18,7 @@ if __name__ == "__main__":
     preds = []
     bertmodel, vocab = get_pytorch_kobert_model(cachedir=".cache")
     model = BERTClassifier(bertmodel, dr_rate=0.5).to(DEVICE)
-    model.load_state_dict(torch.load('./save_folder/2023_05_24_09_57_25_4_epoch_model_state_dict.pth'))
+    model.load_state_dict(torch.load('./save_folder/model_state_dict.pth')) # model_state_dict.pth
     model.eval()
     for batch_id, (token_ids, valid_length, segment_ids, _) in tqdm(enumerate(eval_dataloader),
                                                                     total=len(eval_dataloader)):
