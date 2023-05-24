@@ -8,14 +8,19 @@ from tqdm import tqdm
 from dataset import BERTDataset
 from main import DATA_DIR, tok, max_len, batch_size, DEVICE, BASE_DIR
 from model import BERTClassifier
+import torch.nn.functional as F
 
-dataset_eval = pd.read_csv(os.path.join(DATA_DIR, 'test.csv'))
-dataset_eval['target'] = [0]*len(dataset_eval)
-data_eval = BERTDataset(dataset_eval, tok, max_len, True, False)
-eval_dataloader = DataLoader(data_eval, batch_size=batch_size, shuffle=False)
 
 if __name__ == "__main__":
+
+    dataset_eval = pd.read_csv(os.path.join(DATA_DIR, 'train_g2p_removed_label_error_revised.csv'))
+    dataset_eval['target'] = [0] * len(dataset_eval)
+    data_eval = BERTDataset(dataset_eval, tok, max_len, True, False)
+    eval_dataloader = DataLoader(data_eval, batch_size=batch_size, shuffle=False)
+
     preds = []
+    class_preds = []
+
     bertmodel, vocab = get_pytorch_kobert_model(cachedir=".cache")
     model = BERTClassifier(bertmodel, dr_rate=0.5).to(DEVICE)
     model.load_state_dict(torch.load('./save_folder/model_state_dict.pth')) # model_state_dict.pth
@@ -28,8 +33,11 @@ if __name__ == "__main__":
         out = model(token_ids, valid_length, segment_ids)
         max_vals, max_indices = torch.max(out, 1)
         preds.extend(list(max_indices))
+        class_preds.extend(F.softmax(out,dim=-1).detach().cpu().tolist())
 
     preds = [int(p) for p in preds]
 
+
     dataset_eval['target'] = preds
-    dataset_eval.to_csv(os.path.join('output', 'output.csv'), index=False)
+    dataset_eval['class_preds'] = class_preds
+    dataset_eval.to_csv(os.path.join('output', 'train_output.csv'), index=False)

@@ -41,8 +41,12 @@ bertmodel, vocab = get_pytorch_kobert_model(cachedir=".cache")
 tokenizer = get_tokenizer()
 tok = nlp.data.BERTSPTokenizer(tokenizer, vocab, lower=False)
 
-data = pd.read_csv(os.path.join(DATA_DIR, 'train_g2p_removed_label_error_revised.csv'))
-dataset_train, dataset_eval = train_test_split(data, train_size=0.7, random_state=SEED)
+#data = pd.read_csv(os.path.join(DATA_DIR, 'train_g2p_removed_label_error_revised.csv'))
+#dataset_train, dataset_eval = train_test_split(data, train_size=0.7, random_state=SEED)
+
+
+dataset_train = pd.read_csv(os.path.join(DATA_DIR, 'train_clean.csv'))
+dataset_eval = pd.read_csv(os.path.join(DATA_DIR, 'val_clean.csv'))
 
 data_train = BERTDataset(dataset_train, tok, max_len, True, False)
 data_eval = BERTDataset(dataset_eval, tok, max_len, True, False)
